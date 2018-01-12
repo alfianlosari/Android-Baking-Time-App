@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Baking Time</string>
+    <string name="intent_recipe_id_key" translatable="false">intent_recipe_id_key</string>
+    <string name="intent_step_id_key" translatable="false">intent_step_id_key</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="step_header">Step %2$d</string>
+    <string name="step_intro">Introduction</string>
+    <string name="Prev">Prev</string>
+    <string name="Next">Next</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="device_type">phone</string>
+    <string name="portrait" translatable="false">portrait</string>
+    <string name="landscape" translatable="false">landscape</string>
+    <string name="tablet" translatable="false">tablet</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="no_recipe">No recipe found. Tap here to select a recipe</string>
+</resources>
