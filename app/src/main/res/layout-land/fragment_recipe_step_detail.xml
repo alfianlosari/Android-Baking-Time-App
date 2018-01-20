@@ -15,6 +15,13 @@
         android:visibility="visible"
         app:resize_mode="fit" />
 
+    <ImageView
+        android:id="@+id/imageview_thumbnail"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
     <TextView
         android:id="@+id/textview_instruction"
         android:tag="@string/landscape"

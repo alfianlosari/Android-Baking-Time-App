@@ -14,9 +14,10 @@ public final class Ingredient {
     public String measure;
     public String ingredient;
 
-    public ContentValues contentValuesWithRecipeId(int recipeId) {
+    public ContentValues contentValuesWithRecipeId(int recipeId, int order) {
         ContentValues cv = new ContentValues();
         cv.put(IngredientContract.COLUMN_RECIPE_ID, recipeId);
+        cv.put(IngredientContract.COLUMN_INGREDIENT_ORDER, order);
         cv.put(IngredientContract.COLUMN_INGREDIENT, ingredient);
         cv.put(IngredientContract.COLUMN_MEASURE, measure);
         cv.put(IngredientContract.COLUMN_QUANTITY, quantity);

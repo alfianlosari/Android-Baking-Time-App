@@ -20,7 +20,7 @@ import com.alfianlosari.baking.provider.BakingProvider;
 import com.alfianlosari.baking.provider.IngredientContract;
 import com.alfianlosari.baking.provider.RecipeContract;
 import com.alfianlosari.baking.provider.StepContract;
-import com.alfianlosari.baking.service.RecipeListStepService;
+import com.alfianlosari.baking.service.RecipeListIngredientService;
 
 public class RecipeDetailActivity extends AppCompatActivity implements RecipeDetailCursorAdapter.RecipeDetailStepClickListener {
 
@@ -38,22 +38,17 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             IngredientContract.COLUMN_ID,
             IngredientContract.COLUMN_INGREDIENT,
             IngredientContract.COLUMN_MEASURE,
-            IngredientContract.COLUMN_QUANTITY
+            IngredientContract.COLUMN_QUANTITY,
+            IngredientContract.COLUMN_INGREDIENT_ORDER
     };
 
-    public static final int INDEX_INGREDIENT_ID = 0;
-    public static final int INDEX_INGREDIENT_INGREDIENT= 1;
-    public static final int INDEX_INGREDIENT_MEASURE = 2;
-    public static final int INDEX_INGREDIENT_QUANTITY = 3;
+
 
     public static final String[] STEPS_PROJECTION = {
             StepContract.COLUMN_ID,
             StepContract.COLUMN_STEP_ORDER,
             StepContract.COLUMN_SHORT_DESCRIPTION
     };
-
-    public static final int INDEX_STEP_ID = 0;
-    public static final int INDEX_STEP_SHORT_DESCRIPTION = 1;
 
     private LoaderManager.LoaderCallbacks<Cursor> mCursorIngredientLoaderCallback = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
@@ -198,7 +193,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
                 prefEditor.putLong(RecipeDetailActivity.RECIPE_ID, RecipeContract.INVALID_RECIPE_ID);
                 prefEditor.apply();
 
-                RecipeListStepService.startActionUpdateRecipeWidgets(this);
+                RecipeListIngredientService.startActionUpdateRecipeWidgets(this);
                 onBackPressed();
                 return true;
         }

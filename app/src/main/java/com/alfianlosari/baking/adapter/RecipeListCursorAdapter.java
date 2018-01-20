@@ -6,10 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alfianlosari.baking.ui.RecipeListActivity;
 import com.alfianlosari.baking.R;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by alfianlosari on 29/12/17.
@@ -38,6 +40,11 @@ public final class RecipeListCursorAdapter extends RecyclerView.Adapter<RecipeLi
         String name = mCursor.getString(RecipeListActivity.INDEX_RECIPE_NAME);
         holder.mTextView.setText(name);
         holder.itemView.setTag(mCursor.getLong(RecipeListActivity.INDEX_RECIPE_ID));
+        String image = mCursor.getString(RecipeListActivity.INDEX_RECIPE_IMAGE);
+        if (!image.isEmpty()) {
+            Picasso.with(holder.itemView.getContext()).load(mCursor.getString(RecipeListActivity.INDEX_RECIPE_IMAGE)).into(holder.mImageView);
+
+        }
     }
 
 
@@ -62,10 +69,12 @@ public final class RecipeListCursorAdapter extends RecyclerView.Adapter<RecipeLi
     public class RecipeViewHolder extends RecyclerView.ViewHolder {
 
         public TextView mTextView;
+        public ImageView mImageView;
 
         public RecipeViewHolder(View itemView) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.textview_recipe);
+            mImageView = itemView.findViewById(R.id.image_recipe);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

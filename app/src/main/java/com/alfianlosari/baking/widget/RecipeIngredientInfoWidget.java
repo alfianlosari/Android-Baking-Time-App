@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import com.alfianlosari.baking.R;
-import com.alfianlosari.baking.service.RecipeListStepService;
+import com.alfianlosari.baking.service.RecipeListIngredientService;
 import com.alfianlosari.baking.service.RecipeListWidgetService;
 import com.alfianlosari.baking.ui.RecipeDetailActivity;
 import com.alfianlosari.baking.ui.RecipeListActivity;
@@ -20,12 +20,12 @@ import com.alfianlosari.baking.ui.RecipeStepDetailActivity;
 /**
  * Implementation of App Widget functionality.
  */
-public class RecipeStepInfoWidget extends AppWidgetProvider {
+public class RecipeIngredientInfoWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, String recipeName,
                                 int appWidgetId) {
 
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_step_info_widget);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_ingredient_info_widget);
 
 
         Intent intent = new Intent(context, RecipeListWidgetService.class);
@@ -43,16 +43,9 @@ public class RecipeStepInfoWidget extends AppWidgetProvider {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
 
-        Intent appIntent;
-        if (dpWidth >= 600) {
-            appIntent = new Intent(context, RecipeDetailActivity.class);
-        } else {
-            appIntent = new Intent(context, RecipeStepDetailActivity.class);
-        }
-
+        Intent appIntent = new Intent(context, RecipeDetailActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, appIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.widget_list_view, pendingIntent);
-
 
         views.setRemoteAdapter(R.id.widget_list_view, intent);
         views.setEmptyView(R.id.widget_list_view, R.id.widget_text_view);
@@ -68,13 +61,13 @@ public class RecipeStepInfoWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        RecipeListStepService.startActionUpdateRecipeWidgets(context);
+        RecipeListIngredientService.startActionUpdateRecipeWidgets(context);
     }
 
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
-        RecipeListStepService.startActionUpdateRecipeWidgets(context);
+        RecipeListIngredientService.startActionUpdateRecipeWidgets(context);
     }
 
     @Override

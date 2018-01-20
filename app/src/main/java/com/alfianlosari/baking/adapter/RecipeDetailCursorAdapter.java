@@ -62,17 +62,18 @@ public final class RecipeDetailCursorAdapter extends RecyclerView.Adapter<Recycl
 
     }
 
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_INGREDIENTS:
                 RecipeIngredientViewHolder ingredientViewHolderViewHolder = (RecipeIngredientViewHolder) holder;
                 String text = "";
-                mIngredientCursor.moveToFirst();
+                mIngredientCursor.moveToPosition(-1);
                 while (mIngredientCursor.moveToNext()) {
+
                     text = text
-                            + "- "
-                            + mIngredientCursor.getFloat(mIngredientCursor.getColumnIndex(IngredientContract.COLUMN_QUANTITY)) + " "
+                            + formatNumber(mIngredientCursor.getFloat(mIngredientCursor.getColumnIndex(IngredientContract.COLUMN_QUANTITY))) + " "
                             + mIngredientCursor.getString(mIngredientCursor.getColumnIndex(IngredientContract.COLUMN_MEASURE)) + " "
                             + mIngredientCursor.getString(mIngredientCursor.getColumnIndex(IngredientContract.COLUMN_INGREDIENT));
                     if (!mIngredientCursor.isLast()) {
@@ -155,6 +156,14 @@ public final class RecipeDetailCursorAdapter extends RecyclerView.Adapter<Recycl
 
     public interface RecipeDetailStepClickListener {
         void onClickRecipe(long id);
+    }
+
+    public String formatNumber(float d) {
+        if (d == (long) d) {
+            return String.format("%d", (long) d);
+        } else {
+            return String.format("%.1f", d);
+        }
     }
 
     public class RecipeIngredientViewHolder extends RecyclerView.ViewHolder {

@@ -31,7 +31,7 @@ import com.alfianlosari.baking.data.Step;
 import com.alfianlosari.baking.provider.BakingProvider;
 import com.alfianlosari.baking.provider.RecipeContract;
 import com.alfianlosari.baking.resources.SimpleIdlingResource;
-import com.alfianlosari.baking.service.RecipeListStepService;
+import com.alfianlosari.baking.service.RecipeListIngredientService;
 
 
 import java.io.IOException;
@@ -51,11 +51,13 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListC
     private BakingAPI mBakingAPI;
     public static final String[] MAIN_RECIPES_PROJECTION = {
             RecipeContract.COLUMN_ID,
-            RecipeContract.COLUMN_NAME
+            RecipeContract.COLUMN_NAME,
+            RecipeContract.COLUMN_IMAGE
     };
 
     public static final int INDEX_RECIPE_ID = 0;
     public static final int INDEX_RECIPE_NAME = 1;
+    public static final int INDEX_RECIPE_IMAGE = 2;
 
     @Nullable
     private SimpleIdlingResource mIdlingResource;
@@ -105,12 +107,15 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListC
                                 .build());
 
 
-                            for (Ingredient ingredient: recipe.ingredients) {
-                                ContentValues ingredientContentValues = ingredient.contentValuesWithRecipeId(recipe.id);
+                            for (int i=0; i < recipe.ingredients.length; i++) {
+                                Ingredient ingredient = recipe.ingredients[i];
+                                ContentValues ingredientContentValues = ingredient.contentValuesWithRecipeId(recipe.id, i);
                                 operations.add(ContentProviderOperation.newInsert(BakingProvider.BakingIngredients.CONTENT_URI)
                                         .withValues(ingredientContentValues)
                                         .build());
                             }
+
+
 
                             for (Step step: recipe.steps) {
                                 ContentValues stepContentValues = step.contentValuesWithRecipeId(recipe.id);
@@ -143,7 +148,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListC
         @Override
         public void onLoadFinished(Loader<Recipe[]> loader, Recipe[] data) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            RecipeListStepService.startActionUpdateRecipeWidgets(RecipeListActivity.this);
+            RecipeListIngredientService.startActionUpdateRecipeWidgets(RecipeListActivity.this);
             if (mIdlingResource != null) {
                 mIdlingResource.setIdleState(true);
             }
@@ -216,7 +221,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeListC
         prefEditor.putLong(RecipeDetailActivity.RECIPE_ID, id);
         prefEditor.apply();
 
-        RecipeListStepService.startActionUpdateRecipeWidgets(this);
+        RecipeListIngredientService.startActionUpdateRecipeWidgets(this);
 
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putExtra(getResources().getString(R.string.intent_recipe_id_key), id);

@@ -14,12 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alfianlosari.baking.R;
 import com.alfianlosari.baking.provider.BakingProvider;
 import com.alfianlosari.baking.provider.RecipeContract;
 import com.alfianlosari.baking.provider.StepContract;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.ExoPlayerLibraryInfo;
@@ -32,6 +34,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -39,9 +42,13 @@ import java.util.ArrayList;
 public class RecipeStepDetailFragment extends Fragment {
 
     private static final String STEP_ID = "STEP_ID";
+    private static final String PLAYER_POSITION = "PLAYER_POSITION";
+    private String mVideoURL;
     private long mStepId;
+    private long mPlayerPosition;
     private SimpleExoPlayerView mSimpleExoPlayerView;
     private TextView mInstructionTextView;
+    private ImageView mThumbnailImageView;
     private SimpleExoPlayer mExoPlayer;
     private Button nextButton;
     private Button prevButton;
@@ -51,15 +58,13 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
-
         mInstructionTextView = rootView.findViewById(R.id.textview_instruction);
+        mThumbnailImageView = rootView.findViewById(R.id.imageview_thumbnail);
         mSimpleExoPlayerView = rootView.findViewById(R.id.playerView);
         mSimpleExoPlayerView.requestFocus();
         prevButton = rootView.findViewById(R.id.prevButton);
         nextButton = rootView.findViewById(R.id.nextButton);
-
         if (prevButton != null) {
             prevButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -82,12 +87,14 @@ public class RecipeStepDetailFragment extends Fragment {
 
         if(savedInstanceState != null) {
             mStepId = savedInstanceState.getLong(STEP_ID, -1);
+            mPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION, C.TIME_UNSET);
+        } else {
+            mPlayerPosition = C.TIME_UNSET;
         }
 
         if (mStepId != -1) {
             setupView(mStepId);
         }
-
         return rootView;
     }
 
@@ -100,22 +107,23 @@ public class RecipeStepDetailFragment extends Fragment {
                 null
         );
 
-
         if (stepCursor != null && stepCursor.moveToNext()) {
             Long recipeId = stepCursor.getLong(stepCursor.getColumnIndex(StepContract.COLUMN_RECIPE_ID));
             int order = stepCursor.getInt(stepCursor.getColumnIndex(StepContract.COLUMN_STEP_ORDER));
             String instruction = stepCursor.getString(stepCursor.getColumnIndex(StepContract.COLUMN_DESCRIPTION));
             String videoURL = stepCursor.getString(stepCursor.getColumnIndex(StepContract.COLUMN_VIDEO_URL));
-
+            String thumbnailURL = stepCursor.getString(stepCursor.getColumnIndex(StepContract.COLUMN_THUMBNAIL_URL));
             String tag = (String) mInstructionTextView.getTag();
 
             if (tag.equals(getResources().getString(R.string.landscape))) {
                 if (videoURL.isEmpty()) {
                     mSimpleExoPlayerView.setVisibility(View.GONE);
                     mInstructionTextView.setVisibility(View.VISIBLE);
+                    mThumbnailImageView.setVisibility(View.VISIBLE);
                 } else {
                     mInstructionTextView.setVisibility(View.GONE);
                     mSimpleExoPlayerView.setVisibility(View.VISIBLE);
+                    mThumbnailImageView.setVisibility(View.VISIBLE);
                     setScreenAsFullScreen();
                 }
             } else if (tag.equals(getResources().getString(R.string.portrait))) {
@@ -143,6 +151,9 @@ public class RecipeStepDetailFragment extends Fragment {
             }
 
             mInstructionTextView.setText(instruction);
+            if (!thumbnailURL.isEmpty()) {
+                Picasso.with(getContext()).load(thumbnailURL).into(mThumbnailImageView);
+            }
 
             Cursor recipeCursor = getContext().getContentResolver().query(
                     BakingProvider.BakingRecipes.withId(recipeId),
@@ -164,15 +175,8 @@ public class RecipeStepDetailFragment extends Fragment {
             }
 
             recipeCursor.close();
-
+            mVideoURL = videoURL;
             ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(titleText);
-            if (!videoURL.isEmpty()) {
-                releasePlayer();
-                initializePlayer(Uri.parse(videoURL));
-                mSimpleExoPlayerView.setVisibility(View.VISIBLE);
-            } else {
-                mSimpleExoPlayerView.setVisibility(View.GONE);
-            }
         } else {
             mSimpleExoPlayerView.setVisibility(View.GONE);
         }
@@ -222,15 +226,33 @@ public class RecipeStepDetailFragment extends Fragment {
             mExoPlayer.release();
             mExoPlayer = null;
         }
+    }
 
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mVideoURL != null && !mVideoURL.isEmpty()) {
+            initializePlayer(Uri.parse(mVideoURL));
+            mSimpleExoPlayerView.setVisibility(View.VISIBLE);
+        } else {
+            mSimpleExoPlayerView.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (mExoPlayer != null) {
+            if (mPlayerPosition != C.TIME_UNSET) {
+                mExoPlayer.seekTo(mPlayerPosition);
+            }
             mExoPlayer.setPlayWhenReady(true);
-
         }
     }
 
@@ -238,8 +260,8 @@ public class RecipeStepDetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (mExoPlayer != null) {
-            mExoPlayer.setPlayWhenReady(false);
-
+            mPlayerPosition = mExoPlayer.getCurrentPosition();
+            releasePlayer();
         }
     }
 
@@ -265,7 +287,8 @@ public class RecipeStepDetailFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle currentState) {
-        currentState.putLong(STEP_ID, mStepId);
+        if (mStepId != -1) currentState.putLong(STEP_ID, mStepId);
+        if (mPlayerPosition != -1) currentState.putLong(PLAYER_POSITION, mPlayerPosition);
     }
 
 }

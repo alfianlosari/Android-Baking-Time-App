@@ -26,6 +26,12 @@
                 android:background="@android:color/black"
                 app:resize_mode="fit" />
 
+            <ImageView
+                android:id="@+id/imageview_thumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
             <TextView
                 android:id="@+id/textview_instruction"
                 android:layout_width="match_parent"

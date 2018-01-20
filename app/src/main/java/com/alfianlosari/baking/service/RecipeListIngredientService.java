@@ -12,21 +12,21 @@ import android.support.annotation.Nullable;
 
 import com.alfianlosari.baking.R;
 import com.alfianlosari.baking.ui.RecipeDetailActivity;
-import com.alfianlosari.baking.widget.RecipeStepInfoWidget;
+import com.alfianlosari.baking.widget.RecipeIngredientInfoWidget;
 import com.alfianlosari.baking.provider.BakingProvider;
 import com.alfianlosari.baking.provider.RecipeContract;
 
 
-public class RecipeListStepService extends IntentService {
+public class RecipeListIngredientService extends IntentService {
 
     public static final String ACTION_UPDATE_RECIPE_SELECTED = "com.alfianlosari.baking.action.recipe_selected";
 
-    public RecipeListStepService() {
-        super("RecipeListStepService");
+    public RecipeListIngredientService() {
+        super("RecipeListIngredientService");
     }
 
     public static void startActionUpdateRecipeWidgets(Context context) {
-        Intent intent = new Intent(context, RecipeListStepService.class);
+        Intent intent = new Intent(context, RecipeListIngredientService.class);
         intent.setAction(ACTION_UPDATE_RECIPE_SELECTED);
         context.startService(intent);
     }
@@ -61,9 +61,9 @@ public class RecipeListStepService extends IntentService {
         }
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeStepInfoWidget.class));
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeIngredientInfoWidget.class));
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
-        RecipeStepInfoWidget.updateRecipeWidgets(this, appWidgetManager, recipeName, appWidgetIds);
+        RecipeIngredientInfoWidget.updateRecipeWidgets(this, appWidgetManager, recipeName, appWidgetIds);
 
     }
 }

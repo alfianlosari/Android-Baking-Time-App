@@ -11,6 +11,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.alfianlosari.baking.R;
+import com.alfianlosari.baking.provider.IngredientContract;
 import com.alfianlosari.baking.ui.RecipeDetailActivity;
 import com.alfianlosari.baking.provider.BakingProvider;
 import com.alfianlosari.baking.provider.RecipeContract;
@@ -38,7 +39,7 @@ public class RecipeListRemoteViewsFactory implements RemoteViewsService.RemoteVi
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.mContext);
         long recipeId = pref.getLong(RecipeDetailActivity.RECIPE_ID, RecipeContract.INVALID_RECIPE_ID);
         mRecipeId = recipeId;
-        Uri RECIPE_URI = BakingProvider.BakingSteps.withRecipeId(recipeId);
+        Uri RECIPE_URI = BakingProvider.BakingIngredients.withRecipeId(recipeId);
         if (mCursor != null) mCursor.close();
         mCursor = mContext.getContentResolver().query(
                 RECIPE_URI,
@@ -66,25 +67,33 @@ public class RecipeListRemoteViewsFactory implements RemoteViewsService.RemoteVi
         mCursor.moveToPosition(i);
 
 
-        RemoteViews views =  new RemoteViews(mContext.getPackageName(), R.layout.recipe_step_widget_item);
-        long stepId = mCursor.getLong(mCursor.getColumnIndex(StepContract.COLUMN_ID));
-        int order = mCursor.getInt(mCursor.getColumnIndex(StepContract.COLUMN_STEP_ORDER));
-        String headerText = "";
-        if (order > 0) {
-            headerText = String.valueOf(order) + ". ";
-        }
+        RemoteViews views =  new RemoteViews(mContext.getPackageName(), R.layout.recipe_ingredient_widget_item);
+        String ingredient = mCursor.getString(mCursor.getColumnIndex(IngredientContract.COLUMN_INGREDIENT));
 
-        String shortDescription = mCursor.getString(mCursor.getColumnIndex(StepContract.COLUMN_SHORT_DESCRIPTION));
-        views.setTextViewText(R.id.textview_widget_step, headerText + shortDescription);
+        String text = ""
+                + formatNumber(mCursor.getFloat(mCursor.getColumnIndex(IngredientContract.COLUMN_QUANTITY))) + " "
+                + mCursor.getString(mCursor.getColumnIndex(IngredientContract.COLUMN_MEASURE)) + " "
+                + mCursor.getString(mCursor.getColumnIndex(IngredientContract.COLUMN_INGREDIENT));
+
+
+        views.setTextViewText(R.id.textview_widget_step, text);
 
         Bundle extras = new Bundle();
-        extras.putLong(mContext.getResources().getString(R.string.intent_step_id_key), stepId);
         extras.putLong(mContext.getResources().getString(R.string.intent_recipe_id_key), mRecipeId);
         Intent fillIntent = new Intent();
         fillIntent.putExtras(extras);
         views.setOnClickFillInIntent(R.id.textview_widget_step, fillIntent);
         return views;
     }
+
+    public String formatNumber(float d) {
+        if (d == (long) d) {
+            return String.format("%d", (long) d);
+        } else {
+            return String.format("%.1f", d);
+        }
+    }
+
 
     @Override
     public RemoteViews getLoadingView() {

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import net.simonvt.schematic.annotation.AutoIncrement;
 import net.simonvt.schematic.annotation.ConflictResolutionType;
 import net.simonvt.schematic.annotation.DataType;
+import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.PrimaryKey;
 import net.simonvt.schematic.annotation.References;
 
@@ -28,6 +29,10 @@ public class IngredientContract {
 
     @DataType(DataType.Type.REAL)
     public static final String COLUMN_QUANTITY = "quantity";
+
+    @DataType(DataType.Type.INTEGER)
+    @NotNull
+    public static final String COLUMN_INGREDIENT_ORDER = "ingredient_order";
 
     @DataType(DataType.Type.INTEGER)
     @References(

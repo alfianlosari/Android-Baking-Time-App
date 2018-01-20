@@ -46,7 +46,7 @@ public class BakingProvider {
         @ContentUri(
                 path = "ingredients",
                 type = "vnd.android.cursor.dir/ingredients",
-                defaultSort = IngredientContract.COLUMN_INGREDIENT + " ASC"
+                defaultSort = IngredientContract.COLUMN_ID + " ASC"
         )
         public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/ingredients");
 
@@ -66,11 +66,11 @@ public class BakingProvider {
                 type = "vnd.android.cursor.dir/ingredients",
                 name = "INGREDIENTS_RECIPE_ID",
                 whereColumn = IngredientContract.COLUMN_RECIPE_ID,
-                defaultSort = IngredientContract.COLUMN_INGREDIENT + " ASC",
+                defaultSort = IngredientContract.COLUMN_INGREDIENT_ORDER + " ASC",
                 pathSegment = 1
         )
-        public static Uri withRecipeId(long recipeIdid) {
-            return Uri.parse("content://" + AUTHORITY + "/recipes/" + recipeIdid + "/ingredients");
+        public static Uri withRecipeId(long recipeId) {
+            return Uri.parse("content://" + AUTHORITY + "/recipes/" + recipeId + "/ingredients");
         }
 
     }
