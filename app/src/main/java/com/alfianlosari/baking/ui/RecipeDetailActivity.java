@@ -46,7 +46,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             IngredientContract.COLUMN_QUANTITY,
             IngredientContract.COLUMN_INGREDIENT_ORDER
     };
-    
+
     public static final String[] STEPS_PROJECTION = {
             StepContract.COLUMN_ID,
             StepContract.COLUMN_STEP_ORDER,
@@ -237,7 +237,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         layoutSavedPosition = savedInstanceState.getParcelable(LAYOUT_MANAGER_POSITION);
         super.onRestoreInstanceState(savedInstanceState);
-
     }
 
     private void restoreLayoutManagerPosition() {
