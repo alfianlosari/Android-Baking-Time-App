@@ -70,7 +70,9 @@ public class RecipeStepDetailFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     mStepId -= 1;
+                    releasePlayer();
                     setupView(mStepId);
+                    playVideo();
                 }
             });
         }
@@ -80,7 +82,9 @@ public class RecipeStepDetailFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     mStepId += 1;
+                    releasePlayer();
                     setupView(mStepId);
+                    playVideo();
                 }
             });
         }
@@ -229,6 +233,17 @@ public class RecipeStepDetailFragment extends Fragment {
     }
 
 
+    private void playVideo() {
+        if (mVideoURL != null && !mVideoURL.isEmpty()) {
+            initializePlayer(Uri.parse(mVideoURL));
+            mSimpleExoPlayerView.setVisibility(View.VISIBLE);
+        } else {
+            mSimpleExoPlayerView.setVisibility(View.GONE);
+        }
+
+    }
+
+
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
@@ -237,12 +252,7 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (mVideoURL != null && !mVideoURL.isEmpty()) {
-            initializePlayer(Uri.parse(mVideoURL));
-            mSimpleExoPlayerView.setVisibility(View.VISIBLE);
-        } else {
-            mSimpleExoPlayerView.setVisibility(View.GONE);
-        }
+        playVideo();
     }
 
     @Override

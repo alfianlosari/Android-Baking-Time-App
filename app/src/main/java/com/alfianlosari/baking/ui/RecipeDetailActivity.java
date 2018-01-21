@@ -3,6 +3,8 @@ package com.alfianlosari.baking.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
@@ -27,9 +29,12 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     private long mStepId;
     private long mRecipeId;
     public static final String RECIPE_ID = "RECIPE_ID";
+    private static final String LAYOUT_MANAGER_POSITION = "LAYOUT_MANAGER_POSITION";
+
     private static final int CURSOR_INGREDIENTS_ID = 101;
     private static final int CURSOR_STEPS_ID = 102;
     private boolean mTwoPane;
+    private Parcelable layoutSavedPosition;
 
     private RecipeDetailCursorAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -65,6 +70,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             mAdapter.swapIngredientsCursor(data);
+            restoreLayoutManagerPosition();
         }
 
         @Override
@@ -88,6 +94,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             mAdapter.swapStepsCursor(data);
+            restoreLayoutManagerPosition();
         }
 
         @Override
@@ -154,6 +161,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             }
 
         }
+
     }
 
     @Override
@@ -182,6 +190,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
     @Override
     protected void onResume() {
         super.onResume();
+        restoreLayoutManagerPosition();
 
     }
 
@@ -217,5 +226,25 @@ public class RecipeDetailActivity extends AppCompatActivity implements RecipeDet
             startActivity(intent);
         }
 
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(LAYOUT_MANAGER_POSITION, mRecyclerView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        layoutSavedPosition = savedInstanceState.getParcelable(LAYOUT_MANAGER_POSITION);
+        super.onRestoreInstanceState(savedInstanceState);
+
+    }
+
+    private void restoreLayoutManagerPosition() {
+        if (layoutSavedPosition != null) {
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(layoutSavedPosition);
+        }
     }
 }
