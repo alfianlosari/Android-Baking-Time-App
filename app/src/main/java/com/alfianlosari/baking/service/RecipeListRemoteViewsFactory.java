@@ -38,6 +38,7 @@ public class RecipeListRemoteViewsFactory implements RemoteViewsService.RemoteVi
     public void onDataSetChanged() {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this.mContext);
         long recipeId = pref.getLong(RecipeDetailActivity.RECIPE_ID, RecipeContract.INVALID_RECIPE_ID);
+        if (recipeId == RecipeContract.INVALID_RECIPE_ID) return;
         mRecipeId = recipeId;
         Uri RECIPE_URI = BakingProvider.BakingIngredients.withRecipeId(recipeId);
         if (mCursor != null) mCursor.close();
