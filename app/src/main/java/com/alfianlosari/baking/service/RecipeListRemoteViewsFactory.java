@@ -53,7 +53,6 @@ public class RecipeListRemoteViewsFactory implements RemoteViewsService.RemoteVi
 
     @Override
     public void onDestroy() {
-
     }
 
     @Override
